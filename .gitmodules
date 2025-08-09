@@ -1,0 +1,4 @@
+[submodule "aida_bot_ws/ds4_driver"]
+	path = aida_bot_ws/ds4_driver
+	url = https://github.com/naoki-mizuno/ds4drv
+	branch = devel
