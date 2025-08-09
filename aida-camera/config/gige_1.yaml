@@ -1,0 +1,37 @@
+index: !!str "1"
+serial: !!str "053003620038"
+resolution: !!str "2048,2048"
+fps: !!int 30
+is_calibrated: !!bool true
+camera_matrix: [983.69003,   0.     , 963.07744,
+                0.     , 977.89903, 558.57986,
+                0.     ,   0.     ,   1.     ]
+distortion_model: plumb_bob
+distortion_coefficients: [-0.017920, -0.057303, 0.005525, -0.005233, 0.000000]
+rectification_matrix: [1., 0., 0.,
+                       0., 1., 0.,
+                       0., 0., 1.]
+projection_matrix: [ 944.24103,    0.     , 1000.45295,    0.     ,
+                     0.     ,  976.57404,  557.823  ,    0.     ,
+                     0.     ,    0.     ,    1.     ,    0.     ]
+
+GigE_param_file: !!str "param_gige_1.config"
+load_from_file : !!bool true
+
+invert_color: !!bool false
+sharpness: !!int 90
+monochrome: !!bool false
+contrast: !!int 100
+gamma: !!int 100
+saturation: !!int 80
+
+auto_exposure: !!bool false
+auto_exposure_target: !!int 50
+analog_gain: !!int 5
+light_frequency: !!int 50
+antiflick: !!bool true
+exposure_time: !!int 12000
+
+position: !!str "0.0,0.0,0.0"
+orientation: !!str "0.0,0.0,0.0"
+queue_size: !!int 10
