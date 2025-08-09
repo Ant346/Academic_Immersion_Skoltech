@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  ds4driver:
+    build:
+      context: ./ds4_driver/docker
+      dockerfile: Dockerfile
+    volumes:
+      - ./ds4_driver:/workspace/ds4_driver
+      - /dev:/dev
+    environment:
+      - ROS_DISTRO=humble
+    entrypoint: ["/entrypoint.bash"]
+    command: ["ros2", "launch", "ds4_driver", "demo.launch.xml"]
+    privileged: true
+
+  hoverboard_node:
+    build:
+      context: ./hoverboard_node
+      dockerfile: dockerfile
+    volumes:
+      - ./hoverboard_node:/workspace/hoverboard_node
+      - /dev:/dev
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    environment:
+      - DISPLAY=${DISPLAY}
+    command: ["zsh"]  # Or your ROS launch command
+    privileged: true
