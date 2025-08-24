@@ -1,0 +1,30 @@
+[0.600s] Invoking command in '/home/agro/aida_ws/agro-driver-new/build/agro-driver-new': PYTHONPATH=/home/agro/aida_ws/agro-driver-new/build/agro-driver-new/prefix_override:/home/agro/aida_ws/agro-driver-new/install/agro-driver-new/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py develop --editable --build-directory /home/agro/aida_ws/agro-driver-new/build/agro-driver-new/build --no-deps symlink_data
+[0.844s] running develop
+[0.844s] /home/agro/.local/lib/python3.10/site-packages/setuptools/command/develop.py:41: EasyInstallDeprecationWarning: easy_install command is deprecated.
+[0.844s] !!
+[0.844s] 
+[0.844s]         ********************************************************************************
+[0.844s]         Please avoid running ``setup.py`` and ``easy_install``.
+[0.844s]         Instead, use pypa/build, pypa/installer or other
+[0.844s]         standards-based tools.
+[0.844s] 
+[0.844s]         See https://github.com/pypa/setuptools/issues/917 for details.
+[0.844s]         ********************************************************************************
+[0.844s] 
+[0.844s] !!
+[0.844s]   easy_install.initialize_options(self)
+[1.018s] running egg_info
+[1.031s] writing agro_driver_new.egg-info/PKG-INFO
+[1.032s] writing dependency_links to agro_driver_new.egg-info/dependency_links.txt
+[1.032s] writing entry points to agro_driver_new.egg-info/entry_points.txt
+[1.032s] writing requirements to agro_driver_new.egg-info/requires.txt
+[1.032s] writing top-level names to agro_driver_new.egg-info/top_level.txt
+[1.065s] reading manifest file 'agro_driver_new.egg-info/SOURCES.txt'
+[1.066s] writing manifest file 'agro_driver_new.egg-info/SOURCES.txt'
+[1.107s] running build_ext
+[1.107s] Creating /home/agro/aida_ws/agro-driver-new/install/agro-driver-new/lib/python3.10/site-packages/agro-driver-new.egg-link (link to .)
+[1.108s] Installing hoverboard_driver script to /home/agro/aida_ws/agro-driver-new/install/agro-driver-new/lib/agro-driver-new
+[1.108s] 
+[1.108s] Installed /home/agro/aida_ws/agro-driver-new/build/agro-driver-new
+[1.108s] running symlink_data
+[1.141s] Invoked command in '/home/agro/aida_ws/agro-driver-new/build/agro-driver-new' returned '0': PYTHONPATH=/home/agro/aida_ws/agro-driver-new/build/agro-driver-new/prefix_override:/home/agro/aida_ws/agro-driver-new/install/agro-driver-new/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py develop --editable --build-directory /home/agro/aida_ws/agro-driver-new/build/agro-driver-new/build --no-deps symlink_data
