@@ -1,6 +1,7 @@
 #ifndef __DATA_HXX__
 #define __DATA_HXX__
 
+#include <chrono>
 #include <string>
 #include "CameraApi.h" //API header file of camera SDK
 
@@ -29,9 +30,13 @@ struct Data{
     // Device config
     int saturation_{80}; // 0->100
     double exposure_time_{(5000) }; // Continuously adjustable. 16->2097140 numbers should be divisible by 16. [unit] microseconds.
+    double auto_exposure_min_time_us_{16.0};
+    double auto_exposure_max_time_us_{2097140.0};
     double auto_exposure_target_{50}; // 20 -> 160
     std::string resolution_{"640,480"};
-    int analog_gain_{25}; // 5 -> 33
+    double analog_gain_x_{1.0};
+    double auto_exposure_min_gain_x_{1.0};
+    double auto_exposure_max_gain_x_{4.0};
     int gamma_{100}; // 0 -> 240
     int contrast_{100}; // 0 -> 190
     BOOL monochrome_{false}; 

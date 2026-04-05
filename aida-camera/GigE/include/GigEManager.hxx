@@ -13,7 +13,10 @@ using namespace std::chrono_literals;
 #include <sstream>
 
 // ROS2 LIBRARIES
-#include <cv_bridge/cv_bridge.h>
+#include <cv_bridge/cv_bridge.hpp>
+#include "diagnostic_msgs/msg/diagnostic_array.hpp"
+#include "diagnostic_msgs/msg/diagnostic_status.hpp"
+#include "diagnostic_msgs/msg/key_value.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include <image_transport/image_transport.hpp>
 #include "sensor_msgs/msg/image.hpp"
@@ -35,6 +38,7 @@ class GigE : public rclcpp::Node
         void getFrame();
         void publishFrame();
         void operate();
+        void publishMetrics();
 
         // Getter
         auto getCameraInfo() -> void;
@@ -51,6 +55,7 @@ class GigE : public rclcpp::Node
         
         std::shared_ptr<image_transport::ImageTransport> image_transport_;
         image_transport::CameraPublisher image_transport_publisher_;
+        rclcpp::Publisher<diagnostic_msgs::msg::DiagnosticArray>::SharedPtr status_publisher_;
 
         rclcpp::TimerBase::SharedPtr timer_;
         sensor_msgs::msg::Image::SharedPtr frame_;
@@ -61,6 +66,12 @@ class GigE : public rclcpp::Node
         std::string frame_id_;
         std_msgs::msg::Header header_;
         int queue_size_;
+        std::size_t published_frames_{0};
+        std::chrono::steady_clock::time_point fps_window_start_{std::chrono::steady_clock::now()};
+        int previous_frame_total_{0};
+        int previous_frame_captured_{0};
+        int previous_frame_lost_{0};
+        unsigned int previous_frame_resend_{0};
 
  
 };

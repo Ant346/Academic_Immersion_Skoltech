@@ -1,0 +1,7 @@
+.git
+**/__pycache__
+**/*.pyc
+**/.DS_Store
+aida-camera/build
+aida-camera/install
+aida-camera/log

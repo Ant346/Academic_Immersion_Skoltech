@@ -29,10 +29,14 @@ public:
   auto setSharpness(int)-> void;
   auto setAutoExposureFlag(bool)-> void;
   auto setAutoExposureTarget(int)-> void;
+  auto setAutoExposureMinTime(double)-> void;
+  auto setAutoExposureMaxTime(double)-> void;
+  auto setAutoExposureMinGainX(double)-> void;
+  auto setAutoExposureMaxGainX(double)-> void;
   auto setMonochromeFlag(bool)-> void;
   auto setContrast(int)-> void;
   auto setGamma(int)-> void;
-  auto setAnalogGain(int)-> void;
+  auto setAnalogGainX(double)-> void;
   auto setExposureTime(int)-> void;
   auto setSaturation(int)-> void;
 

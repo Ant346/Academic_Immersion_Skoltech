@@ -1,0 +1,14 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Colcon / ROS build artifacts
+/aida-camera/build/
+/aida-camera/install/
+/aida-camera/log/
+
+# SDK runtime data and logs
+/aida-camera/Camera/
+
+# Temporary recordings and generated media
+/aida-camera/*.mp4

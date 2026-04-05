@@ -2,7 +2,7 @@ index: !!str "1"
 serial: !!str "053003620038"
 resolution: !!str "2048,2048"
 fps: !!int 30
-is_calibrated: !!bool true
+is_calibrated: !!bool false
 camera_matrix: [983.69003,   0.     , 963.07744,
                 0.     , 977.89903, 558.57986,
                 0.     ,   0.     ,   1.     ]
@@ -25,9 +25,13 @@ contrast: !!int 100
 gamma: !!int 100
 saturation: !!int 80
 
-auto_exposure: !!bool false
+auto_exposure: !!bool true
 auto_exposure_target: !!int 50
-analog_gain: !!int 5
+auto_exposure_min_time_us: !!float 200.0
+auto_exposure_max_time_us: !!float 20000.0
+auto_exposure_min_gain_x: !!float 2.5
+auto_exposure_max_gain_x: !!float 12.5
+analog_gain_x: !!float 2.5
 light_frequency: !!int 50
 antiflick: !!bool true
 exposure_time: !!int 12000

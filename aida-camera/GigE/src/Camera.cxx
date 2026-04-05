@@ -1,5 +1,6 @@
 
 #include "Camera.hxx"
+#include <cmath>
 #include <sstream>
 
 Camera::~Camera(){
@@ -12,7 +13,7 @@ auto Camera::setIndex(std::string value) -> void{
 }
 
 auto Camera::setSerial(std::string value) -> void{
-    if (value.size() > 0){value.pop_back();}
+    // Launch normalizes serial strings already; keep the full value unchanged.
     this -> data_.serial_ = value;
 }
 
@@ -85,6 +86,42 @@ auto Camera::setAutoExposureTarget(int value) -> void{
     }
 }
 
+auto Camera::setAutoExposureMinTime(double value) -> void{
+    if (value > 0){
+        this -> data_.auto_exposure_min_time_us_ = value;
+    }
+    else{
+        throw std::runtime_error("Auto exposure minimum time should be > 0.");
+    }
+}
+
+auto Camera::setAutoExposureMaxTime(double value) -> void{
+    if (value > 0){
+        this -> data_.auto_exposure_max_time_us_ = value;
+    }
+    else{
+        throw std::runtime_error("Auto exposure maximum time should be > 0.");
+    }
+}
+
+auto Camera::setAutoExposureMinGainX(double value) -> void{
+    if (value > 0){
+        this -> data_.auto_exposure_min_gain_x_ = value;
+    }
+    else{
+        throw std::runtime_error("Auto exposure minimum gain multiplier should be > 0.");
+    }
+}
+
+auto Camera::setAutoExposureMaxGainX(double value) -> void{
+    if (value > 0){
+        this -> data_.auto_exposure_max_gain_x_ = value;
+    }
+    else{
+        throw std::runtime_error("Auto exposure maximum gain multiplier should be > 0.");
+    }
+}
+
 auto Camera::setContrast(int value) -> void{
     if (value >= 0 and value <= 190){
         this -> data_.contrast_ = value;
@@ -103,12 +140,12 @@ auto Camera::setGamma(int value) -> void{
     }
 }
 
-auto Camera::setAnalogGain(int value) -> void{
-    if (value >= 5 and value <= 33){
-        this -> data_.analog_gain_ = value;
+auto Camera::setAnalogGainX(double value) -> void{
+    if (value > 0){
+        this -> data_.analog_gain_x_ = value;
     }
     else{
-        throw std::runtime_error("Analog-Gain Value should be in range 5-33");
+        throw std::runtime_error("Analog gain multiplier should be > 0.");
     }
 }
 
@@ -175,31 +212,27 @@ auto Camera::setProjectionMatrix(std::vector<double> projection_matrix) -> void{
 }
 
 auto Camera::setSensorResolution() -> void{
-    /*
-        Levels:
-        0: 2048x2048
-        1: 2048x1536
-        2: 1920x1200
-        3: 1600x1200
-        4: 640x480
-        */
-        std::unordered_map<std::string, int> levels{
-            {"2048,2048", 0},
-            {"2048,1536", 1},
-            {"1920,1200", 2},
-            {"1600,1200", 3},
-            {"1280,1024", 4},
-            {"640,480", 5}
-        };
+    for (int i{}; i < this -> data_.tCapability_.iImageSizeDesc; ++i){
+        tSdkImageResolution resolution = this -> data_.tCapability_.pImageSizeDesc[i];
+        if (resolution.iWidth == this -> data_.image_size_.width and
+            resolution.iHeight == this -> data_.image_size_.height){
+            this -> data_.iStatus_ = CameraSetImageResolution(this -> data_.hCamera_, &resolution);
+            if(this -> data_.iStatus_!=CAMERA_STATUS_SUCCESS){throw std::runtime_error("CameraSetImageResolution failed.");}
+            return;
+        }
+    }
 
-        // // std::replace(data_.resolution_.begin(), data_.resolution_.end(), ',', 'X');
-        // if (auto search = levels.find(data_.resolution_); search != levels.end()){
-        //     data_.tCapability_.pImageSizeDesc->iIndex = search -> second;
-        // }        
+    tSdkImageResolution custom_resolution{};
+    custom_resolution.iIndex = 0xFF;
+    custom_resolution.iHOffsetFOV = std::max(0, (this -> data_.tCapability_.sResolutionRange.iWidthMax - this -> data_.image_size_.width) / 2);
+    custom_resolution.iVOffsetFOV = std::max(0, (this -> data_.tCapability_.sResolutionRange.iHeightMax - this -> data_.image_size_.height) / 2);
+    custom_resolution.iWidthFOV = this -> data_.image_size_.width;
+    custom_resolution.iHeightFOV = this -> data_.image_size_.height;
+    custom_resolution.iWidth = this -> data_.image_size_.width;
+    custom_resolution.iHeight = this -> data_.image_size_.height;
 
-        // data_.iStatus_ = CameraSetImageResolution(data_.hCamera_, data_.tCapability_.pImageSizeDesc);
-        // if(data_.iStatus_!=CAMERA_STATUS_SUCCESS){throw std::runtime_error("CameraSetImageResolution failed.");}
-        // CameraGetImageResolution(data_.hCamera_, data_.tCapability_.pImageSizeDesc);
+    this -> data_.iStatus_ = CameraSetImageResolution(this -> data_.hCamera_, &custom_resolution);
+    if(this -> data_.iStatus_!=CAMERA_STATUS_SUCCESS){throw std::runtime_error("CameraSetImageResolution failed.");}
 
 }
 
@@ -278,13 +311,43 @@ auto Camera::warmUp() -> void{
     this -> data_.iStatus_ = CameraSetAeState(this -> data_.hCamera_, static_cast<int>(this -> data_.auto_exposure_));
     if(this -> data_.iStatus_!=CAMERA_STATUS_SUCCESS){throw std::runtime_error("CameraSetAeState failed.");}
 
+    float gain_min_x{};
+    float gain_max_x{};
+    float gain_step_x{};
+    this -> data_.iStatus_ = CameraGetAnalogGainXRange(this -> data_.hCamera_, &gain_min_x, &gain_max_x, &gain_step_x);
+    if(this -> data_.iStatus_!=CAMERA_STATUS_SUCCESS){throw std::runtime_error("CameraGetAnalogGainXRange failed.");}
+
     if (this -> data_.auto_exposure_){
+        if (this -> data_.auto_exposure_min_time_us_ > this -> data_.auto_exposure_max_time_us_){
+            throw std::runtime_error("Auto exposure min time should not exceed max time.");
+        }
+        if (this -> data_.auto_exposure_min_gain_x_ > this -> data_.auto_exposure_max_gain_x_){
+            throw std::runtime_error("Auto exposure min gain should not exceed max gain.");
+        }
+        if (this -> data_.auto_exposure_min_gain_x_ < gain_min_x or this -> data_.auto_exposure_max_gain_x_ > gain_max_x){
+            throw std::runtime_error("Auto exposure gain multiplier range is outside camera limits.");
+        }
+
         // Set Anti-flick capability
         this -> data_.iStatus_ = CameraSetAntiFlick(this -> data_.hCamera_, this -> data_.anti_flick_);
         if(this -> data_.iStatus_!=CAMERA_STATUS_SUCCESS){throw std::runtime_error("CameraSetAntiFlick failed.");}
 
         this -> data_.iStatus_ = CameraSetAeTarget(this -> data_.hCamera_, this -> data_.auto_exposure_target_ ); 
         if(this -> data_.iStatus_!=CAMERA_STATUS_SUCCESS){throw std::runtime_error("CameraSetExposureTime failed.");}
+
+        this -> data_.iStatus_ = CameraSetAeExposureRange(
+            this -> data_.hCamera_,
+            this -> data_.auto_exposure_min_time_us_,
+            this -> data_.auto_exposure_max_time_us_
+        );
+        if(this -> data_.iStatus_!=CAMERA_STATUS_SUCCESS){throw std::runtime_error("CameraSetAeExposureRange failed.");}
+
+        this -> data_.iStatus_ = CameraSetAeAnalogGainRange(
+            this -> data_.hCamera_,
+            static_cast<int>(std::lround(this -> data_.auto_exposure_min_gain_x_ / gain_step_x)),
+            static_cast<int>(std::lround(this -> data_.auto_exposure_max_gain_x_ / gain_step_x))
+        );
+        if(this -> data_.iStatus_!=CAMERA_STATUS_SUCCESS){throw std::runtime_error("CameraSetAeAnalogGainRange failed.");}
 
         // Set light frequency 50Hz/60Hz -> it only works if the anti-flick is set.
         if(!this -> data_.anti_flick_){
@@ -304,8 +367,11 @@ auto Camera::warmUp() -> void{
 
         // Set Analog Gain
         if (!this -> data_.auto_exposure_){
-            this -> data_.iStatus_ = CameraSetAnalogGain(this -> data_.hCamera_, this -> data_.analog_gain_);
-            if(this -> data_.iStatus_!=CAMERA_STATUS_SUCCESS){throw std::runtime_error("CameraSetAnalogGain failed.");}
+            if (this -> data_.analog_gain_x_ < gain_min_x or this -> data_.analog_gain_x_ > gain_max_x){
+                throw std::runtime_error("Analog gain multiplier is outside camera limits.");
+            }
+            this -> data_.iStatus_ = CameraSetAnalogGainX(this -> data_.hCamera_, static_cast<float>(this -> data_.analog_gain_x_));
+            if(this -> data_.iStatus_!=CAMERA_STATUS_SUCCESS){throw std::runtime_error("CameraSetAnalogGainX failed.");}
         }
 
     }
@@ -337,7 +403,7 @@ auto Camera::warmUp() -> void{
    
     // Setting the Resolution
     CameraGetCapability(this -> data_.hCamera_, &this -> data_.tCapability_);
-    // this -> setSensorResolution();
+    this -> setSensorResolution();
 
     // Set Frame speed -> 0-10: 0, 11-20:1, 21-...:2
     this -> data_.iStatus_ = CameraSetFrameSpeed(this -> data_.hCamera_, this -> data_.frame_speed_);
@@ -372,7 +438,14 @@ auto Camera::prepareFrame() -> void{
     if(CameraGetImageBuffer(data_.hCamera_, &data_.sFrameInfo_,&data_.pbyBuffer_,1000) == CAMERA_STATUS_SUCCESS)
 		{
 		    CameraImageProcess(data_.hCamera_, data_.pbyBuffer_, data_.g_pRgbBuffer_, &data_.sFrameInfo_);
-            cv::Mat matImage(data_.tCapability_.sResolutionRange.iWidthMax, data_.tCapability_.sResolutionRange.iHeightMax, data_.out_format_, (void*)data_.g_pRgbBuffer_);
+            // Use actual frame dimensions returned by SDK. Using sensor max dimensions
+            // can produce cropped/shifted output when the camera streams a smaller ROI.
+            cv::Mat matImage(
+                data_.sFrameInfo_.iHeight,
+                data_.sFrameInfo_.iWidth,
+                data_.out_format_,
+                (void*)data_.g_pRgbBuffer_
+            );
             if(this -> data_.load_file){
                 this -> data_.distorted_frame_ = matImage;
             }
@@ -396,7 +469,11 @@ auto Camera::prepareFrame() -> void{
 }
 
 auto Camera::undistortImage() -> void{
-    this -> data_.undistorted_frame_ = cv::Mat::zeros(this -> data_.image_size_.height, this -> data_.image_size_.width, this -> data_.channel_);
+    this -> data_.undistorted_frame_ = cv::Mat::zeros(
+        this -> data_.image_size_.height,
+        this -> data_.image_size_.width,
+        this -> data_.out_format_
+    );
     cv::remap(this -> data_.distorted_frame_, this -> data_.undistorted_frame_, this -> data_.map1_, this -> data_.map2_, cv::INTER_LINEAR, cv::BORDER_CONSTANT, cv::Scalar());
 }
 
@@ -421,6 +498,24 @@ auto Camera::logEverything() -> void{
         CameraGetAeTarget(this -> data_.hCamera_, &ae_target);
         std::clog << "[INFO] Auto Exposure Target: " << ae_target << "\n";
 
+        double ae_min_exposure{};
+        double ae_max_exposure{};
+        CameraGetAeExposureRange(this -> data_.hCamera_, &ae_min_exposure, &ae_max_exposure);
+        std::clog << "[INFO] Auto Exposure Range: " << ae_min_exposure << " - " << ae_max_exposure << " micro_seconds\n";
+
+        int ae_min_gain_raw{};
+        int ae_max_gain_raw{};
+        CameraGetAeAnalogGainRange(this -> data_.hCamera_, &ae_min_gain_raw, &ae_max_gain_raw);
+        float gain_range_min_x{};
+        float gain_range_max_x{};
+        float gain_range_step_x{};
+        CameraGetAnalogGainXRange(this -> data_.hCamera_, &gain_range_min_x, &gain_range_max_x, &gain_range_step_x);
+        std::clog << "[INFO] Auto Gain Range: "
+                  << ae_min_gain_raw * gain_range_step_x
+                  << "x - "
+                  << ae_max_gain_raw * gain_range_step_x
+                  << "x\n";
+
         CameraGetAntiFlick(this -> data_.hCamera_, &this -> data_.anti_flick_);
         std::clog << "[INFO] Anti-Flick: " << (this -> data_.anti_flick_ ? "true" : "false") << "\n";
 
@@ -435,8 +530,9 @@ auto Camera::logEverything() -> void{
         CameraGetExposureTime(this -> data_.hCamera_, &this -> data_.exposure_time_); 
         std::clog << "[INFO] Exposure Time: " << this -> data_.exposure_time_ << " micro_seconds\n";
 
-        CameraGetAnalogGain(this -> data_.hCamera_, &this -> data_.analog_gain_);
-        std::clog << "[INFO] Analog Gain: " << this -> data_.analog_gain_ << "\n";
+        float analog_gain_x{};
+        CameraGetAnalogGainX(this -> data_.hCamera_, &analog_gain_x);
+        std::clog << "[INFO] Analog Gain: " << analog_gain_x << "x\n";
     }
 
     CameraGetSaturation(this -> data_.hCamera_, &this -> data_.saturation_);

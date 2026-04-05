@@ -10,6 +10,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(diagnostic_msgs REQUIRED)
 find_package(image_transport REQUIRED)
 find_package(OpenCV 4 REQUIRED)
 find_package(cv_bridge REQUIRED)
@@ -33,6 +34,7 @@ ament_target_dependencies(
   rclcpp
   std_msgs
   sensor_msgs
+  diagnostic_msgs
   cv_bridge
   image_transport
   OpenCV
@@ -52,6 +54,16 @@ target_link_libraries(
 install(TARGETS
   ${PROJECT_NAME}_camera
   DESTINATION lib/${PROJECT_NAME})
+
+install(DIRECTORY
+  ../launch
+  DESTINATION share/${PROJECT_NAME}
+)
+
+install(DIRECTORY
+  ../config
+  DESTINATION share/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
