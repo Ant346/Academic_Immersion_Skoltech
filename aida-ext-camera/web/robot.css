@@ -1,0 +1,27 @@
+.map-panel{background:#0f1918;border-radius:12px;overflow:hidden;border:1px solid #253331}
+.map-stage{position:relative;aspect-ratio:16/10;min-height:340px}
+.map-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hud{position:absolute;top:16px;right:16px;display:grid;grid-template-columns:repeat(2,minmax(96px,auto));gap:1px;background:#ffffff14;border:1px solid #ffffff14;border-radius:10px;overflow:hidden;backdrop-filter:blur(8px)}
+.hud>div{background:#0f1918cc;padding:10px 14px;display:grid;grid-template-columns:auto auto;align-items:baseline;column-gap:6px}
+.hud span{grid-column:1/-1;font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:#8ea49a}
+.hud strong{font:22px var(--mono);font-weight:400;color:#e8f3ee;font-variant-numeric:tabular-nums}
+.hud small{font-size:10px;color:#8ea49a}
+#robot-dot{width:7px;height:7px;border-radius:100%;background:#93a29b;display:inline-block}
+#robot-dot.on{background:#59cd8c;box-shadow:0 0 10px #59cd8c}
+.estimate{margin-top:14px;padding:12px;border-radius:6px;background:#f4f6f3;font:12px/1.7 var(--mono)}
+.calibration-result{margin-top:14px;padding:12px;border-radius:6px;background:#f1f7f3;font:11px/1.8 var(--mono);color:var(--ink)}
+.calibration-result.bad{background:#fcf3ec;color:#976629}
+.button.recording{background:#b34435;color:#fff;border-color:#b34435;animation:breathe 1.4s infinite}
+@keyframes breathe{50%{opacity:.75}}
+.tiny-tag.done{background:#e4f3ea;color:var(--green)}
+.dark-label{color:var(--muted)}
+#camera-panel{margin-bottom:24px}
+/* Fullscreen map */
+body.map-page{background:#0b1312;color:#e4eae6;overflow:hidden}
+.map-page .map-stage{position:fixed;inset:0;aspect-ratio:auto}
+.map-page .hud{top:auto;bottom:24px;right:24px;grid-template-columns:repeat(6,minmax(105px,auto))}
+.map-page .hud strong{font-size:30px}
+.map-title{position:fixed;top:22px;left:26px;font:12px var(--mono);letter-spacing:2px;color:#9fb4ab;display:flex;gap:14px;align-items:center}
+.map-title a{color:#9fb4ab;text-decoration:none;border:1px solid #2b3934;padding:6px 10px;border-radius:6px}
+.map-status{position:fixed;top:22px;right:26px;font:11px var(--mono);color:#9fb4ab;display:flex;gap:10px;align-items:center}
+@media(max-width:720px){.hud{grid-template-columns:1fr 1fr;top:8px;right:8px}.hud strong{font-size:16px}.map-page .hud{grid-template-columns:1fr 1fr;right:8px;bottom:8px}.map-page .hud strong{font-size:20px}}

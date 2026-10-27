@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Карта робота · CAM / LAB</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/robot.css"><script src="/map.js" defer></script></head>
+<body class="map-page">
+<div class="map-stage"><canvas id="map"></canvas>
+  <div class="hud"><div><span>X</span><strong id="pose-x">—</strong><small>м</small></div><div><span>Y</span><strong id="pose-y">—</strong><small>м</small></div><div><span>Курс</span><strong id="pose-yaw">—</strong></div><div><span>Скорость</span><strong id="pose-speed">—</strong><small>м/с</small></div><div><span>Высота Z</span><strong id="pose-z">—</strong><small>м</small></div><div><span>Наклон</span><strong id="pose-tilt">—</strong></div></div>
+</div>
+<div class="map-title"><a href="/robot.html">← Шаг 3</a>CAM / LAB · КАРТА</div>
+<div class="map-status"><i id="robot-dot"></i><span id="robot-status">ПОИСК РОБОТА</span> · <span id="robot-rate">—</span></div>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const $ = id => document.getElementById(id);
+  const map = new FloorMap($('map'));
+  try {
+    const state = await (await fetch('/api/robot/state')).json();
+    map.setRobotSize(state.calibration.robot_size_m);
+    if (state.mode !== 'robot' && state.floor_ready)
+      await fetch('/api/mode', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({mode: 'robot'})});
+  } catch (e) {}
+  connectMap(map, data => {
+    const f = formatPose(data.robot);
+    $('pose-x').textContent = f.x; $('pose-y').textContent = f.y; $('pose-yaw').textContent = f.yaw;
+    $('pose-z').textContent = f.z; $('pose-tilt').textContent = f.tilt;
+    $('robot-dot').classList.toggle('on', !!data.robot);
+    $('robot-status').textContent = data.robot ? 'РОБОТ НА КАРТЕ' : (data.reason || 'ПОИСК РОБОТА').toUpperCase();
+  });
+  setInterval(() => {
+    const s = map.stats();
+    $('pose-speed').textContent = s.age < 1.5 ? s.speed.toFixed(2) : '—';
+    $('robot-rate').textContent = s.rate ? `${s.rate.toFixed(1)} Гц` : '—';
+  }, 250);
+});
+</script>
+</body></html>

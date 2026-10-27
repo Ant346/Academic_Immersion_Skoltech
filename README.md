@@ -4,3 +4,5 @@
 Let's make TRL 6!
 AIDA_moto_old - repo from second iteration of agrobot with primitive arduino communication
 
+
+aida-ext-camera - external fixed camera: robot pose on the floor map (AprilGrid, Docker, web UI)

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Робот на карте · CAM / LAB</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/floor.css"><link rel="stylesheet" href="/robot.css"><script src="/map.js" defer></script><script src="/robot.js" defer></script></head>
+<body>
+<header><a class="brand" href="/">CAM / LAB</a><a class="header-note" href="/floor.html">02 · Камера → пол</a><span class="header-note">03 · Робот</span><span class="connection" id="robot-connection"><i></i> Камера отключена</span></header>
+<main>
+  <div class="intro"><div><p class="eyebrow">ШАГ 03 · ДОСКА НА РОБОТЕ</p><h1>Робот на карте</h1><p>Закрепите доску 3 × 3 на роботе горизонтально, рисунком вверх. Уберите вторую такую же доску с пола: ID маркеров совпадают.</p></div><a class="button secondary" href="/map.html" target="_blank">Карта на весь экран ↗</a></div>
+  <nav class="steps"><a href="/">01 · Параметры объектива</a><a href="/floor.html">02 · Привязка к полу</a><span class="active">03 · Робот на карте</span></nav>
+  <div class="workspace">
+    <aside>
+      <section class="panel"><div class="panel-heading"><h2>1 · Высота доски</h2><span class="tiny-tag" id="height-tag">НЕ ЗАДАНА</span></div>
+        <p class="helper">Высота рисунка над полом. Измерьте рулеткой или возьмите оценку камеры: она появляется, когда доска видна.</p>
+        <div class="estimate" id="height-estimate">Оценка камеры: —</div>
+        <button id="height-use" class="button secondary full" disabled>Взять оценку камеры</button>
+        <label for="height-mm">Высота, мм</label><input id="height-mm" type="number" min="0" max="3000" step="1">
+        <label for="robot-length">Размер робота для карты, м (длина × ширина)</label><div class="pair"><input id="robot-length" type="number" min="0.05" max="5" step="0.01"><input id="robot-width" type="number" min="0.05" max="5" step="0.01"></div>
+        <button id="height-apply" class="button primary full">Применить</button>
+      </section>
+      <section class="panel"><div class="panel-heading"><h2>2 · Центр робота</h2><span class="tiny-tag" id="spin-tag">НЕ ЗАДАН</span></div>
+        <p class="helper">Нажмите «Начать» и медленно разверните робота на месте, лучше на полный оборот. Центр вращения станет точкой робота на карте.</p>
+        <button id="spin-record" class="button secondary full">Начать запись вращения</button>
+        <div class="calibration-result" id="spin-result" hidden></div>
+      </section>
+      <section class="panel"><div class="panel-heading"><h2>3 · Направление «вперёд»</h2><span class="tiny-tag" id="drive-tag">ОСЬ X ДОСКИ</span></div>
+        <p class="helper">Нажмите «Начать» и проедьте прямо вперёд хотя бы 0,5 м, не поворачивая. По умолчанию «вперёд» — ось X доски.</p>
+        <button id="drive-record" class="button secondary full">Начать запись движения</button>
+        <div class="calibration-result" id="drive-result" hidden></div>
+        <button id="robot-reset" class="button subtle full">Сбросить центр и направление</button>
+      </section>
+      <section class="panel"><div class="panel-heading"><h2>Для программ</h2></div>
+        <p class="helper"><span class="mono">GET /api/robot/pose</span> — последняя поза<br><span class="mono">GET /api/robot/events</span> — поток (SSE)<br>Координаты в метрах, угол в радианах, система пола шага 2.</p>
+        <a class="button secondary full" href="/api/robot/export">Скачать калибровку JSON</a>
+      </section>
+    </aside>
+    <div class="main-column">
+      <section class="map-panel">
+        <div class="preview-heading"><span><i id="robot-dot"></i> <span id="robot-status">ПОИСК РОБОТА</span></span><span id="robot-performance">—</span></div>
+        <div class="map-stage"><canvas id="map"></canvas>
+          <div class="hud"><div><span>X</span><strong id="pose-x">—</strong><small>м</small></div><div><span>Y</span><strong id="pose-y">—</strong><small>м</small></div><div><span>Курс</span><strong id="pose-yaw">—</strong></div><div><span>Скорость</span><strong id="pose-speed">—</strong><small>м/с</small></div><div><span>Высота Z</span><strong id="pose-z">—</strong><small>м</small></div><div><span>Наклон</span><strong id="pose-tilt">—</strong></div></div>
+        </div>
+        <div class="live-stats"><div><span>Маркеры</span><strong id="robot-tags">—</strong></div><div><span>Обновление</span><strong id="robot-rate">—</strong></div><div><span>σ позиции</span><strong id="robot-std">—</strong></div><div><span>Ошибка</span><strong id="robot-rms">—</strong></div></div>
+      </section>
+      <p class="quality-message" id="robot-message"><i class="status-dot"></i><span id="robot-reason">Подключение…</span></p>
+      <div class="capture-actions"><button id="robot-connect" class="button secondary">Подключить камеру</button><label class="preview-toggle dark-label"><input id="camera-toggle" type="checkbox"> Показать камеру</label></div>
+      <section class="preview-panel" id="camera-panel" hidden><div class="viewfinder"><img id="robot-preview" alt="Изображение камеры"></div></section>
+    </div>
+  </div>
+  <footer>CAMERA → FLOOR → ROBOT <span>Калибровка робота: data/robot/current.json</span></footer>
+</main>
+<div id="robot-toast" class="toast" hidden></div>
+</body></html>

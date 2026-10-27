@@ -1,0 +1,14 @@
+*
+!Dockerfile
+!requirements.txt
+!identify_board.py
+!Dockerfile.web
+!requirements.web.txt
+!calibration.py
+!tag_edges.py
+!floor_geometry.py
+!floor_session.py
+!robot_tracking.py
+!app.py
+!web/
+!web/**

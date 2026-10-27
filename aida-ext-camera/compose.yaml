@@ -1,0 +1,25 @@
+services:
+  calibration:
+    image: ext_cam-calibration:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    ports:
+      - "127.0.0.1:8080:8080"
+    devices:
+      - "${USB_CAMERA_DEVICE:-/dev/v4l/by-id/usb-GN_Jabra_A_S_Jabra_PanaCast_20_A0001FB4A9D1-0-video-index0}:/dev/camera"
+    environment:
+      CAMERA_DEVICE: /dev/camera
+      CAMERA_NAME: "${USB_CAMERA_NAME:-Jabra PanaCast 20}"
+      CAMERA_ID: "${USB_CAMERA_DEVICE:-/dev/v4l/by-id/usb-GN_Jabra_A_S_Jabra_PanaCast_20_A0001FB4A9D1-0-video-index0}"
+      DATA_DIR: /data
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+    init: true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/api/state', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      start_period: 10s
+      retries: 3

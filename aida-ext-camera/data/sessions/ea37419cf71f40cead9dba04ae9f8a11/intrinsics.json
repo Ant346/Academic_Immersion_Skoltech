@@ -1,0 +1,210 @@
+{
+  "created_at": "2026-10-25T13:05:32.462682+00:00",
+  "model": "opencv_pinhole",
+  "distortion_model": "plumb_bob",
+  "distortion_order": [
+    "k1",
+    "k2",
+    "p1",
+    "p2",
+    "k3"
+  ],
+  "image_width": 3840,
+  "image_height": 2160,
+  "camera_matrix": [
+    [
+      1925.4632454006824,
+      0.0,
+      1888.994672578954
+    ],
+    [
+      0.0,
+      1927.5359469014209,
+      1036.205084509268
+    ],
+    [
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "distortion_coefficients": [
+    0.04211378751287815,
+    -0.11605520665844808,
+    -8.92384910532197e-05,
+    -0.0004267911652138039,
+    0.029945211235562517
+  ],
+  "rms_px": 1.519975227163646,
+  "intrinsics_std": [
+    1.1323500248780296,
+    1.1264884173218261,
+    0.5318133772325282,
+    0.6234887495744885,
+    0.0006387173199021521,
+    0.0008961822615860653,
+    5.741121976346235e-05,
+    3.6922901193021856e-05,
+    0.00039686893758535184,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "frame_count": 20,
+  "per_view_errors": [
+    {
+      "id": "c9a1614dba67",
+      "rms_px": 1.368892662205357
+    },
+    {
+      "id": "c7794de16c2f",
+      "rms_px": 1.4279918182622133
+    },
+    {
+      "id": "4e5534abfdca",
+      "rms_px": 1.247378466988664
+    },
+    {
+      "id": "e99a1fa62382",
+      "rms_px": 1.260774699726697
+    },
+    {
+      "id": "55729ff46c76",
+      "rms_px": 1.0028477103610893
+    },
+    {
+      "id": "c9bc3406c46e",
+      "rms_px": 1.457780191716872
+    },
+    {
+      "id": "2dd90782735a",
+      "rms_px": 1.522102971855935
+    },
+    {
+      "id": "5ed68265cb42",
+      "rms_px": 1.4985223978798488
+    },
+    {
+      "id": "02ef4b114ced",
+      "rms_px": 1.5010204838387051
+    },
+    {
+      "id": "f90cdb840d54",
+      "rms_px": 1.487588960413819
+    },
+    {
+      "id": "a452685dce8b",
+      "rms_px": 1.4920987371863081
+    },
+    {
+      "id": "84bf4c2c114c",
+      "rms_px": 1.7237620302855174
+    },
+    {
+      "id": "a856458ab17e",
+      "rms_px": 1.3981130733430607
+    },
+    {
+      "id": "b49dc2cf1ae1",
+      "rms_px": 1.5641360779370714
+    },
+    {
+      "id": "aa97439a53f9",
+      "rms_px": 1.5296502239690668
+    },
+    {
+      "id": "67b0e76329ae",
+      "rms_px": 1.4523040313517754
+    },
+    {
+      "id": "16f3a4adab5d",
+      "rms_px": 1.5552492083629026
+    },
+    {
+      "id": "26765d429962",
+      "rms_px": 1.5646955853444195
+    },
+    {
+      "id": "e05f6b73ea27",
+      "rms_px": 2.006160329016777
+    },
+    {
+      "id": "cdb6ec617b9f",
+      "rms_px": 1.99873381840698
+    }
+  ],
+  "board": {
+    "columns": 11,
+    "rows": 8,
+    "tag_size_mm": 25.0,
+    "gap_mm": 7.5,
+    "first_id": 0,
+    "rotation": 180,
+    "ids_bottom_up": true,
+    "border_bits": 2
+  },
+  "family": "tag36h11",
+  "camera": {
+    "name": "Jabra PanaCast 20",
+    "id": "/dev/v4l/by-id/usb-GN_Jabra_A_S_Jabra_PanaCast_20_A0001FB4A9D1-0-video-index0",
+    "device": "/dev/camera",
+    "width": 3840,
+    "height": 2160,
+    "requested_width": 3840,
+    "requested_height": 2160,
+    "fps": 30.0,
+    "fourcc": "MJPG",
+    "controls_at_start": "\nUser Controls\n\n                     brightness 0x00980900 (int)    : min=0 max=255 step=1 default=127 value=127\n                       contrast 0x00980901 (int)    : min=0 max=191 step=1 default=140 value=140\n                     saturation 0x00980902 (int)    : min=128 max=176 step=1 default=143 value=143\n        white_balance_automatic 0x0098090c (bool)   : default=1 value=1\n           power_line_frequency 0x00980918 (menu)   : min=0 max=2 default=0 value=0 (Disabled)\n      white_balance_temperature 0x0098091a (int)    : min=0 max=6500 step=10 default=5000 value=5000 flags=inactive\n                      sharpness 0x0098091b (int)    : min=0 max=255 step=1 default=145 value=150\n\nCamera Controls\n\n                   pan_absolute 0x009a0908 (int)    : min=-460800 max=457200 step=1 default=0 value=0\n                  tilt_absolute 0x009a0909 (int)    : min=-460800 max=457200 step=1 default=0 value=0\n                  zoom_absolute 0x009a090d (int)    : min=100 max=300 step=1 default=100 value=100\n                      pan_speed 0x009a0920 (int)    : min=0 max=10 step=1 default=3 value=0\n                     tilt_speed 0x009a0921 (int)    : min=0 max=10 step=1 default=3 value=0\n",
+    "optical_controls": {
+      "pan_absolute": 0,
+      "tilt_absolute": 0,
+      "zoom_absolute": 100
+    }
+  },
+  "coverage": [
+    [
+      2,
+      4,
+      8,
+      8,
+      8,
+      5
+    ],
+    [
+      5,
+      8,
+      12,
+      10,
+      9,
+      7
+    ],
+    [
+      4,
+      7,
+      10,
+      10,
+      8,
+      5
+    ],
+    [
+      4,
+      6,
+      7,
+      6,
+      5,
+      3
+    ]
+  ],
+  "warnings": [
+    "Ошибка выше 1 px: проверьте размеры и плоскость доски, удалите плохие кадры.",
+    "Меньше 25 кадров: добавьте разные наклоны и положения по краям изображения."
+  ],
+  "opencv_version": "5.0.0",
+  "detector_version": "aprilgrid-border2-edges-v2"
+}

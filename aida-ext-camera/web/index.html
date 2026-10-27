@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Калибровка USB-камеры · Intrinsics</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+<header><a class="brand" href="/" aria-label="Калибровка камеры"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#2558ec" stroke-width="1.5" aria-hidden="true"><circle cx="14" cy="14" r="8"/><circle cx="14" cy="14" r="2"/><path d="M14 1v7m0 12v7M1 14h7m12 0h7"/></svg> CAM / LAB</a><span class="header-note">Локальная калибровка камеры</span><span class="connection" id="connection"><i></i> Камера отключена</span></header>
+<main>
+  <div class="intro"><div><div class="eyebrow">APRILGRID · TAG36H11</div><h1>Калибровка intrinsics</h1><p>Покажите доску с разных ракурсов. Получите параметры объектива для определения позиции робота.</p></div><a class="button secondary" href="/floor.html">Шаг 2 · Привязка к полу ↗</a><button id="new-session" class="button subtle">Новая сессия ↗</button></div>
+  <nav class="steps" aria-label="Этапы калибровки"><span id="step1" class="active"><b>01</b> Камера и доска</span><span id="step2"><b>02</b> Набор кадров</span><span id="step3"><b>03</b> Результат</span></nav>
+  <div class="workspace">
+    <aside>
+      <section class="panel"><div class="panel-heading"><h2>USB-камера</h2><span class="tiny-tag">V4L2</span></div>
+        <label for="camera-name">Устройство</label><select id="camera-name" disabled><option>Поиск камеры…</option></select>
+        <p class="helper">Выбрана внешняя USB-камера. Встроенная камера не используется.</p>
+        <label for="resolution">Разрешение съёмки</label><select id="resolution"><option value="1920x1080">1920 × 1080</option></select>
+        <p id="resolution-note" class="helper"></p>
+        <button id="connect" class="button primary full">Подключить камеру</button>
+        <div id="camera-actual" class="helper mono"></div>
+        <p class="helper">Для Jabra перед съёмкой отключите <strong>Intelligent Zoom</strong> в Jabra Direct.</p>
+        <details class="camera-details"><summary>Постоянные настройки объектива</summary><p>Перед съёмкой зафиксируйте фокус, зум и поле зрения. Отключите автокадрирование. Для Jabra: Jabra Direct → Settings → Camera → Intelligent Zoom → Off.</p><p>Через стандартный USB-интерфейс приложение не может проверить Intelligent Zoom.</p><a href="https://www.jabra.com/supportpages/jabra-panacast-20" target="_blank" rel="noreferrer">Настройки Jabra ↗</a></details>
+      </section>
+      <section class="panel"><div class="panel-heading"><h2>Ваша доска</h2><span class="tiny-tag">AprilGrid</span></div>
+        <form id="board-form">
+          <div class="field-pair"><div><label for="columns">Столбцы</label><input id="columns" name="columns" type="number" value="11" min="2" max="30" required></div><div><label for="rows">Строки</label><input id="rows" name="rows" type="number" value="8" min="2" max="30" required></div></div>
+          <div class="field-pair"><div><label for="tag-size">Маркер, мм</label><input id="tag-size" name="tag_size_mm" type="number" value="25" min="1" max="500" step="0.01" required></div><div><label for="gap">Промежуток, мм</label><input id="gap" name="gap_mm" type="number" value="7.5" min="0.01" max="500" step="0.01" required></div></div>
+          <p class="helper">Сторона — по внешнему краю чёрной рамки. Промежуток — между рамками. Проверьте размеры линейкой на своей распечатке.</p>
+          <details><summary>Раскладка маркеров</summary><label for="first-id">Первый ID</label><input id="first-id" name="first_id" type="number" value="0" min="0" max="586" required>
+            <label for="border-bits">Толщина чёрной рамки, ячеек</label><select id="border-bits"><option value="2">2 — ваша доска</option><option value="1">1 — стандартный маркер</option><option value="3">3</option></select>
+            <label for="id-order">Направление нумерации рядов</label><select id="id-order"><option value="true">ID 0 снизу слева — ваша доска</option><option value="false">ID 0 сверху слева</option></select>
+            <label for="rotation">Поворот кодов относительно макета</label><select id="rotation"><option value="180">180° — ваша доска</option><option value="0">0°</option><option value="90">90°</option><option value="270">270°</option></select>
+            <p class="helper">Число ID растёт слева направо. Порядок углов проверен на вашем снимке.</p>
+          </details>
+          <label class="check"><input id="confirmed" type="checkbox"><span>Размеры проверены. Фокус, зум и автокадрирование зафиксированы.</span></label>
+          <button type="submit" class="button secondary full" id="save-board">Применить настройки</button>
+          <p id="board-status" class="helper">Подтвердите параметры перед сохранением кадров.</p>
+        </form>
+      </section>
+    </aside>
+    <div class="main-column">
+      <section class="preview-panel">
+        <div class="preview-heading"><span><i id="live-dot"></i> <span id="preview-title">Ожидание камеры</span></span><label class="preview-toggle"><input type="checkbox" id="undistort" disabled> Исправить искажения</label></div>
+        <div class="viewfinder"><img id="preview" alt="Изображение USB-камеры с найденными маркерами" hidden><div id="placeholder"><div class="camera-symbol">◎</div><h2>Подключите USB-камеру</h2><p>Разместите доску перед объективом.<br>Найденные маркеры подсветятся зелёным.</p></div><div class="view-corner tl"></div><div class="view-corner tr"></div><div class="view-corner bl"></div><div class="view-corner br"></div><div id="preview-badge" hidden>ИСХОДНОЕ ИЗОБРАЖЕНИЕ</div></div>
+        <div class="live-stats"><div><span>Маркеры</span><strong id="tags">—</strong></div><div><span>Резкость</span><strong id="sharpness">—</strong></div><div><span>Площадь доски</span><strong id="area">—</strong></div><div><span>Раскладка, px</span><strong id="layout-error">—</strong></div></div>
+      </section>
+      <div id="quality-message" class="quality-message"><span class="status-dot"></span><span id="quality-text">Подключите камеру, затем подтвердите размеры доски.</span></div>
+      <div class="capture-actions"><button id="capture" class="button primary" disabled><span>+</span> Сохранить кадр <kbd>Space</kbd></button><label class="check auto-check"><input id="auto-capture" type="checkbox"> Автосбор каждые 3 с</label><span id="capture-count" class="mono">0 / 25 кадров</span></div>
+      <section class="panel guidance"><div><h3>Меняйте положение, расстояние и наклон</h3><p>Держите доску неподвижно во время сохранения. Снимите центр, края и углы кадра; наклоните доску по двум осям. Рекомендуется 25–35 разных кадров.</p></div><div><div class="coverage-label">Покрытие кадра <span id="coverage-percent">0%</span></div><div id="coverage" class="coverage" aria-label="Покрытие кадра наблюдениями"></div></div></section>
+      <section class="panel result-panel" id="result-panel"><div class="panel-heading"><div><div class="eyebrow">ПАРАМЕТРЫ ОБЪЕКТИВА</div><h2>Результат калибровки</h2></div><button id="calibrate" class="button primary" disabled>Рассчитать intrinsics ↗</button></div><div id="result-empty" class="helper">Сохраните минимум 12 разных кадров. После расчёта здесь появятся матрица камеры и коэффициенты искажений.</div><div id="job-error" class="error-text" role="alert"></div><div id="result" hidden><div class="result-overview"><div><span>Ошибка репроекции RMS</span><strong><span id="rms">—</span> <small>px</small></strong></div><div><span>Разрешение калибровки</span><strong id="result-resolution">—</strong></div><div><span>Использовано кадров</span><strong id="result-count">—</strong></div></div><div id="result-warnings" class="result-warnings"></div><div class="matrices"><div><h3>Матрица камеры K</h3><pre id="matrix"></pre></div><div><h3>Дисторсия</h3><div id="distortion" class="distortion"></div></div></div><div class="downloads"><a class="button secondary" href="/api/export/json" download>↓ Скачать JSON</a><a class="button secondary" href="/api/export/yaml" download>↓ Скачать OpenCV YAML</a><span class="helper">Модель: pinhole · k₁, k₂, p₁, p₂, k₃</span></div><p class="helper">Низкий RMS не гарантирует точность во всей рабочей зоне. Проверьте результат на независимых кадрах. Используйте параметры с теми же настройками камеры.</p></div></section>
+    </div>
+  </div>
+  <section class="samples-section"><div class="samples-title"><div><div class="eyebrow">НАБЛЮДЕНИЯ ДОСКИ</div><h2>Сохранённые кадры <span id="sample-total">0</span></h2></div><p>После расчёта у каждого кадра появится его ошибка в пикселях.</p></div><div id="samples" class="samples"><div class="samples-empty">Здесь появятся кадры, которые участвуют в калибровке.</div></div></section>
+  <footer>USB CAMERA CALIBRATION <span>Исходные кадры и результаты сохраняются локально в папке data/</span></footer>
+</main>
+<div id="toast" class="toast" role="status" hidden></div>
+<dialog id="reset-dialog"><h2>Начать новую сессию?</h2><p>Текущие кадры исчезнут из интерфейса. Исходные файлы и результаты останутся в папке предыдущей сессии.</p><div class="dialog-actions"><button class="button secondary" id="cancel-reset">Отмена</button><button class="button primary" id="confirm-reset">Начать новую</button></div></dialog>
+</body></html>

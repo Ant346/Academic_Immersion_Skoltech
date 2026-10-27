@@ -1,0 +1,30 @@
+{
+  "board": {
+    "columns": 3,
+    "rows": 3,
+    "tag_size_mm": 50.0,
+    "gap_mm": 15.0,
+    "first_id": 0,
+    "rotation": 180,
+    "ids_bottom_up": true,
+    "border_bits": 2
+  },
+  "height_m": 0.688,
+  "offset_m": [
+    0.0,
+    0.0
+  ],
+  "heading_offset_rad": 0.0,
+  "robot_size_m": [
+    0.9,
+    0.6
+  ],
+  "spin": null,
+  "drive": null,
+  "floor_reference": [
+    "ade0bb066de5",
+    "2026-10-25T15:27:41.175706+00:00"
+  ],
+  "frames": "board: centre of printed grid, X along printed rows, Y to printed top; robot: offset_m in board frame, yaw = board yaw + heading_offset_rad",
+  "saved_at": "2026-10-25T15:39:53.379187+00:00"
+}

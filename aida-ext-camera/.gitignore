@@ -1,0 +1,19 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Images are never committed: camera frames, thumbnails, board photos, QA screenshots.
+*.png
+*.jpg
+*.jpeg
+artifacts/
+data/qa/
+
+# Board identification output (regenerate with identify_board.py)
+board_identification.json
+
+# Superseded calibration sessions (older 1080p intrinsics, 25 mm floor board)
+data/sessions/3f793426443f47a8882f4b5e57fd78ec/
+data/sessions/4620858f0e2b40af8851b7fbf6b2c827/
+data/floor/sessions/5e3a8423c09f4b769f7eb0492efb8297/
+data/**/*.tmp
